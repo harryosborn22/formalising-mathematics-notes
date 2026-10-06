@@ -222,62 +222,141 @@ learned so far (`exact`, `intro`, `apply`, `specialize`, `have`, `suffices`,
 /-- If we know `P`, and we also know `P → Q`, we can deduce `Q`.
 This is called "modus ponens" by logicians. -/
 example : P → (P → Q) → Q := by
-  sorry
+  intro hP
+  intro hPQ
+  apply hPQ
+  exact hP
 
 /-- `→` is transitive. -/
 example : (P → Q) → (Q → R) → P → R := by
-  sorry
+  intro hPQ hQR hP
+  apply hQR
+  apply hPQ
+  exact hP
 
 /-- If `h : P → Q → R` with goal `⊢ R`, then `apply h` will give two goals! -/
-example : (P → Q → R) → (P → Q) → P → R := by
-  sorry
+example : (P → (Q → R)) → (P → Q) → P → R := by
+  intro hPQR hPQ hP
+  apply hPQR
+  exact hP
+  apply hPQ
+  exact hP
+
 
 /-- `∨` is symmetric. -/
 example : P ∨ Q → Q ∨ P := by
-  sorry
+  intro hPQ
+  rcases hPQ with hP | hQ
+  right
+  exact hP
+  left
+  exact hQ
+
+/-
+  rintro (hP | hQ)
+  right
+  exact hP
+  left
+  exact hQ
+-/
+
 
 /-- `∧` is symmetric. -/
 example : P ∧ Q → Q ∧ P := by
-  sorry
+  intro hPQ
+  constructor
+  rcases hPQ with ⟨hP, hQ⟩
+  exact hQ
+  rcases hPQ with ⟨hP, hQ⟩
+  exact hP
+
 
 /-- `∧` is transitive. -/
 example : P ∧ Q → Q ∧ R → P ∧ R := by
-  sorry
+  intro hPQ hQR
+  constructor
+  rcases hPQ with ⟨hP, hQ⟩
+  exact hP
+  rcases hQR with ⟨hQ, hR⟩
+  exact hR
+
 
 example : P ∨ Q → (P → R) → (Q → R) → R := by
-  sorry
+  intro hPQ hPR hQR
+  rcases hPQ with hP | hQ
+  apply hPR
+  exact hP
+  apply hQR
+  exact hQ
 
 example : (P → Q) → P ∨ R → Q ∨ R := by
-  sorry
+  intro hPQ vPR
+  rcases vPR with hP | hR
+  left
+  apply hPQ
+  exact hP
+  right
+  exact hR
 
 example : P → True := by
-  sorry
+  intro hP
+  exact trivial
 
 example : False → P := by
-  sorry
+  intro hF
+  by_contra hP
+  exact hF
 
 example : ¬ True → P := by
-  sorry
+  intro hNT
+  by_contra hP
+  apply hNT
+  exact trivial
 
 example : P → ¬ False := by
-  sorry
+  intro hP nF
+  exact nF
 
 example : ¬ P → P → Q := by
-  sorry
+  intro nP hP
+  specialize nP hP
+  by_contra hQ
+  exact nP
 
 /-- If we know `P → Q`, and we also know `¬ Q`, we can deduce `¬ P`.
 This is called "modus tollens" by logicians. -/
 example : (P → Q) → ¬ Q → ¬ P := by
-  sorry
+  intro hPQ nQ nP
+  specialize hPQ nP
+  specialize nQ hPQ
+  exact nQ
 
 example : (¬ Q → ¬ P) → P → Q := by
-  sorry
+  intro hnQnP hP
+  by_contra hQ
+  specialize hnQnP hQ
+  specialize hnQnP hP
+  exact hnQnP
 
 example : (P → Q) → ((P → Q) → P) → Q := by
-  sorry
+  intro hPQ hPQP
+  apply hPQ
+  apply hPQP
+  exact hPQ
 
 example : ((P → Q) → R) → ((Q → R) → P) → ((R → P) → Q) → P := by
-  sorry
+  intro hPQR hQRP hRPQ
+  apply hQRP
+  intro hQ
+  apply hPQR
+  intro hP
+  exact hQ
+
 
 example : ((Q → P) → P) → (Q → R) → (R → P) → P := by
-  sorry
+  intro hQPP hQR hRP
+  apply hQPP
+  intro hQ
+  apply hRP
+  apply hQR
+  exact hQ

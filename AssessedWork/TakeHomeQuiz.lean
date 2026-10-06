@@ -1,0 +1,43 @@
+/-
+Copyright (c) 2026 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning
+-/
+module
+
+public import Mathlib.Tactic -- imports all of the tactics in Lean's maths library
+
+/-
+Replace each sorry with a complete Lean proof, and reupload this file by 1pm Friday October 9.
+
+You may only use the tactics from the first two lectures (`exact`, `intro`, `apply`, `specialize`,
+`have`, `suffices`, `left`, `right`, `constructor`, `rcases`, `by_contra`, `by_cases`).
+Do not use other tactics or term mode (if you know what that is).
+-/
+
+example (P Q : Prop) (hP : P) (hQ : P → Q) : P ∧ Q := by
+  constructor
+  exact hP
+  apply hQ
+  exact hP
+
+example (P Q : Prop) (hP : P ∨ Q) (hQ : P → Q) : Q := by
+  rcases hP with h'P | h'Q
+  apply hQ
+  exact h'P
+  exact h'Q
+
+example (P Q : Prop) (hP : P ∧ Q) : P ∨ Q := by
+  left
+  rcases hP with ⟨h'P, h'Q⟩
+  exact h'P
+
+example (h : ¬ True) : False := by
+  apply h
+  exact trivial
+
+
+example (P : Prop) (hP : P) : ¬ ¬ P := by
+  intro nP
+  apply nP
+  exact hP
