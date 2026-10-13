@@ -61,7 +61,11 @@ example : P ∧ Q → Q := by
   sorry
 
 example : (P → Q → R) → P ∧ Q → R := by
-  sorry
+  intro hPQR nPQ
+  obtain ⟨hP, hQ⟩ := nPQ
+  apply hPQR
+  · exact hP
+  · exact hQ
 
 example : P → Q → P ∧ Q := by
   intro hP hQ
@@ -84,17 +88,42 @@ example : P → Q → P ∧ Q := by
 
 /-- `∧` is symmetric -/
 example : P ∧ Q → Q ∧ P := by
-  sorry
+  intro nPQ
+  obtain ⟨hP, hQ⟩ := nPQ
+  constructor
+  · exact hQ
+  · exact hP
 
 example : P → P ∧ True := by
-  sorry
+  intro hP
+  constructor
+  · exact hP
+  · trivial
 
 example : False → P ∧ False := by
-  sorry
+  intro hF
+  constructor
+  · exfalso
+    exact hF
+  · exact hF
+
+example : False → P ∧ False := by
+  intro hF
+  exfalso
+  exact hF
 
 /-- `∧` is transitive -/
 example : P ∧ Q → Q ∧ R → P ∧ R := by
-  sorry
+  intro nPQ nQR
+  obtain ⟨hP, hQ⟩ := nPQ
+  obtain ⟨hQ, hR⟩ := nQR
+  constructor
+  · exact hP
+  · exact hR
 
 example : (P ∧ Q → R) → P → Q → R := by
-  sorry
+  intro nPQR hP hQ
+  apply nPQR
+  constructor
+  · exact hP
+  · exact hQ
