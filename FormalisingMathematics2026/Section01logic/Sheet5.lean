@@ -29,29 +29,119 @@ example : P ↔ P := by
 
 example : (P ↔ Q) → (Q ↔ P) := by
   intro hPQ
+  rw [hPQ]
 
 
 example : (P ↔ Q) ↔ (Q ↔ P) := by
-  sorry
+  constructor
+  · intro hPQ
+    rw [hPQ]
+  · intro hQP
+    rw [hQP]
 
 example : (P ↔ Q) → (Q ↔ R) → (P ↔ R) := by
-  sorry
+  intro hPQ hQR
+  constructor
+  · intro hP
+    rw [← hQR]
+    rwa [← hPQ]
+  · intro hR
+    rw [hPQ]
+    rwa [hQR]
+
   -- The pattern `rw` then `assumption` is common enough that it can be abbreviated to `rwa`
 
 example : P ∧ Q ↔ Q ∧ P := by
-  sorry
+  constructor
+  · intro nPQ
+    obtain ⟨hP, hQ⟩ := nPQ
+    constructor
+    · exact hQ
+    · exact hP
+  · intro nQP
+    obtain ⟨hQ, hP⟩ := nQP
+    constructor
+    · exact hP
+    · exact hQ
 
 example : (P ∧ Q) ∧ R ↔ P ∧ Q ∧ R := by
-  sorry
+  constructor
+  · intro hPQR
+    obtain ⟨hPQ, hR⟩ := hPQR
+    obtain ⟨hP, hQ⟩ := hPQ
+    constructor
+    · exact hP
+    · constructor
+      · exact hQ
+      · exact hR
+  · intro hPQR
+    obtain ⟨hP, hQR⟩ := hPQR
+    obtain ⟨hQ, hR⟩ := hQR
+    constructor
+    · constructor
+      · exact hP
+      · exact hQ
+    · exact hR
+
+example : (P ∧ Q) ∧ R ↔ P ∧ Q ∧ R := by
+  constructor
+  · intro hPQR
+    constructor
+    · exact hPQR.left.left
+    · constructor
+      · exact hPQR.left.right
+      · exact hPQR.right
+  · intro hPQR
+    constructor
+    · constructor
+      · exact hPQR.left
+      · exact hPQR.right.left
+    · exact hPQR.right.right
+
 
 example : P ↔ P ∧ True := by
-  sorry
+  constructor
+  · intro hP
+    constructor
+    · assumption
+    · trivial
+  · intro hPT
+    exact hPT.left
 
 example : False ↔ P ∧ False := by
-  sorry
+  constructor
+  · intro hF
+    constructor
+    · exfalso
+      assumption
+    · assumption
+  · intro hPF
+    exact hPF.right
 
 example : (P ↔ Q) → (R ↔ S) → (P ∧ R ↔ Q ∧ S) := by
-  sorry
+  intro PiffQ RiffS
+  constructor
+  · intro PnR
+    constructor
+    · rw [← PiffQ]
+      exact PnR.left
+    · rw [← RiffS]
+      exact PnR.right
+  · intro QnS
+    constructor
+    · rw [PiffQ]
+      exact QnS.left
+    · rw [RiffS]
+      exact QnS.right
+
 
 example : ¬(P ↔ ¬P) := by
-  sorry
+  intro PiffnP
+  obtain ⟨hPnP, hnPP⟩ := PiffnP
+  by_cases hP : P
+  · apply hPnP
+    · assumption
+    · assumption
+  · apply hP
+    apply hnPP
+    exact hP

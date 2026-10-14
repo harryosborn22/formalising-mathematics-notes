@@ -32,7 +32,9 @@ example : P → P ∨ Q := by
   exact hP
 
 example : Q → P ∨ Q := by
-  sorry
+  intro hQ
+  right
+  exact hQ
 
 -- Here are a few ways to break down a disjunction
 example : P ∨ Q → (P → R) → (Q → R) → R := by
@@ -42,23 +44,44 @@ example : P ∨ Q → (P → R) → (Q → R) → R := by
   | inr h => sorry
 
 example : P ∨ Q → (P → R) → (Q → R) → R := by
-  intro hPoQ
-  obtain h | h := hPoQ
-  · sorry
-  · sorry
+  intro hPoQ hPR hQR
+  obtain hP | hQ := hPoQ
+  · specialize hPR hP
+    exact hPR
+  · specialize hQR hQ
+    exact hQR
 
 example : P ∨ Q → (P → R) → (Q → R) → R := by
-  rintro (h | h)
-  · sorry
-  · sorry
+  rintro (hP | hQ)
+  · intro hPR hQR
+    specialize hPR hP
+    exact hPR
+  · intro hPR hQR
+    specialize hQR hQ
+    exact hQR
 
 -- symmetry of `or`
 example : P ∨ Q → Q ∨ P := by
-  sorry
+  rintro (hP | hQ)
+  · right
+    assumption
+  · left
+    assumption
 
 -- associativity of `or`
 example : (P ∨ Q) ∨ R ↔ P ∨ Q ∨ R := by
-  sorry
+  constructor
+  · rintro (PnQ | hR)
+    · rcases PnQ with hP | hQ
+      · left
+        assumption
+      · right
+        left
+        assumption
+    · right
+      right
+      assumption
+  ·
 
 example : (P → R) → (Q → S) → P ∨ Q → R ∨ S := by
   sorry
