@@ -40,8 +40,3 @@ example (P : Prop) (hP : P) : ¬ ¬ P := by
   intro hnP
   apply hnP
   exact hP
-
-example (P : Prop) (hP : ¬¬P) : P := by
-  by_contra hnP
-  apply hP
-  exact hnP
