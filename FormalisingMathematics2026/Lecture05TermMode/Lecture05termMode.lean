@@ -49,9 +49,6 @@ example (P Q : Prop) (h : P → Q) : ¬ Q → ¬ P := by
   refine h ?_
   refine hP
 
-example (P Q : Prop) (h : P → Q) : ¬ Q → ¬ P := by
-  refine fun hnQ hP ↦ hnQ (h hP)
-
 /-
 The idea behind this replacement is that ultimately a proof in Lean consists of
 a "proof term". In general, tactics are commands that instruct Lean how to build
@@ -139,7 +136,7 @@ and `right` is equivalent to `refine Or.inr ?_`.
 /-
 ## Examples for you to try
 
-Use the "refine dictionary" to produce term-mode proofs of the following propositions.
+Use refine to produce term-mode proofs of the following propositions.
 -/
 
 variable (P Q R : Prop)
