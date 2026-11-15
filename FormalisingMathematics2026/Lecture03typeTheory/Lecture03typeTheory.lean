@@ -128,8 +128,11 @@ Now returning to quantifiers, if `α` is a type, we can quantify over `α` by
 writing `∀ a : α, ...` or `∃ a : α, ...`.
 -/
 
+
+
 example : ∀ x : ℝ, x ^ 2 + 1 ≠ 0 := by
-  sorry
+  intro x
+  nlinarith
 
 example : ∃ x : ℂ, x ^ 2 + 1 = 0 := by
   sorry
@@ -144,7 +147,11 @@ the proposition makes perfect sense when `x` is taken to be a natural number.
 -/
 
 example : ∀ x, x - 1 < x := by
-  sorry
+  intro x
+  convert_to 0 < 1
+  · sorry
+  · sorry
+  · nlinarith
 
 /-
 We will only need to learn one new tactic to be able to work with `∀` and `∃`.
@@ -235,7 +242,10 @@ learned so far (`exact`, `intro`, `apply`, `specialize`, `have`, `suffices`,
 -/
 
 example (α : Type*) (P : α → Prop) (h : ∀ a : α, ¬ P a) : ¬ ∃ a : α, P a := by
-  sorry
+  nlinarith [h]
+
+
+
 
 example (α : Type*) (P : α → Prop) (h : ¬ ∀ a : α, P a) : ∃ a : α, ¬ P a := by
   sorry
