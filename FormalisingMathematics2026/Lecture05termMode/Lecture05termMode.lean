@@ -141,23 +141,41 @@ Use refine to produce term-mode proofs of the following propositions.
 
 variable (P Q R : Prop)
 
+example : P → (P → Q) → Q := by
+  intro hP hPQ
+  apply hPQ
+  exact hP
+
 example : P → (P → Q) → Q :=
-  sorry
+  fun hP hPQ ↦ hPQ hP
 
 example : (P → Q) → (Q → R) → P → R :=
-  sorry
+  fun hPQ hQR hP ↦ hQR (hPQ hP)
+
+example : (P → Q → R) → (P → Q) → P → R := by
+  intro hPQR hPQ hP
+  apply hPQR
+  · exact hP
+  · apply hPQ
+    exact hP
+
+example : (P → Q → R) → (P → Q) → P → R := by
+  refine fun hPQR hPQ hP ↦ ?_
+  refine hPQR ?_ ?_
+
+
 
 example : (P → Q → R) → (P → Q) → P → R :=
-  sorry
+  fun hPQR hPQ hP ↦ hPQR (hP) (hPQ hP)
 
 example : (P → Q) → ((P → Q) → P) → Q :=
-  sorry
+  fun hPQ hPQP ↦ hPQ (hPQP (hPQ))
 
 example : ((P → Q) → R) → ((Q → R) → P) → ((R → P) → Q) → P :=
-  sorry
+  fun hPQR hQRP hRPQ ↦ hQRP (fun hQ ↦ (hPQR (fun hP ↦ hRPQ (fun hR ↦ hP))))
 
 example : ((Q → P) → P) → (Q → R) → (R → P) → P :=
-  sorry
+  fun hQPP hQR hRP ↦ hQPP (fun hQ ↦ (hRP (hQR hQ)))
 
 example (α : Type*) (P : α → Prop) (h : ¬ ∃ a : α, P a) : ∀ a : α, ¬ P a := by
-  sorry
+  refine fun a hPa ↦ h ⟨a, hPa⟩

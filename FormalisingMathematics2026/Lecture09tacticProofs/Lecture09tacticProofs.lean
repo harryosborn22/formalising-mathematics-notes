@@ -34,7 +34,8 @@ example (n : ℕ) : ∑ k ∈ Finset.range n, (2 * k + 1) = n ^ 2 := by
   | zero =>
     simp
   | succ n ih =>
-    rw [Finset.sum_range_succ, ih]
+    rw [Finset.sum_range_succ]
+    rw [ih]
     ring
 
 /-
@@ -107,7 +108,8 @@ example (S : Set ℝ) (a : ℝ) (is_lub : ∀ x, (∀ y ∈ S, y ≤ x) → a �
     ∀ ε > 0, ∃ x ∈ S, a - ε < x := by
   intro ε hε
   specialize is_lub (a - ε)
-  by_contra! h
+  by_contra h
+  push Not at h
   specialize is_lub h
   linarith
 
@@ -164,7 +166,18 @@ but you can give a more traditional proof by using `Metric.tendsto_atTop`.
 open Filter
 
 example : Tendsto (fun n : ℕ ↦ 1 / (n + 1 : ℝ)) atTop (nhds 0) := by
-  sorry
+  rw [Metric.tendsto_atTop]
+  intro ε hε
+  use (⌈(1/ε)⌉₊ - 1)
+  intro n hn
+  simp
+  --norm_num at hn
+  have fact : 1 / ε ≤ |↑n + 1| := by bound
+
+
+
+
+
 
 example : ¬ ∃ a, Tendsto (fun n : ℕ ↦ (-1) ^ n) atTop (nhds a) := by
   sorry

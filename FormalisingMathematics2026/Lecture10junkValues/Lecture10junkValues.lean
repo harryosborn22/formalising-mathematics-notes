@@ -142,7 +142,9 @@ Mathlib solves this by first defining an `ENNReal` version of `infDist`.
 -/
 
 example (s : Set X) (x : X) : infDist x s = 0 := by
-  sorry
+  unfold infDist
+  exact (Metric.infDist x s)
+
 
 example (x : ℝ) : orderOf x ≤ 2 := by
   sorry
@@ -151,7 +153,13 @@ example (α : Type*) : ∑' a : α, 1 = Nat.card α := by
   sorry
 
 example : deriv (fun t : ℝ ↦ t / t) = 0 := by
-  sorry
+  ext a
+  have hzero : deriv ((fun (t : ℝ) ↦ 0) a) = 1 := by
+    bound
+
+
+
+
 
 open scoped IntermediateField in
 example {K L : Type*} [Field K] [Field L] [Algebra K L] {x : L} :

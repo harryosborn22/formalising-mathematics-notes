@@ -76,6 +76,8 @@ class MyGroup (G : Type*) extends One G, Inv G, Mul G where
   inv_mul_cancel (a : G) : a⁻¹ * a = 1
   mul_assoc (a b c : G) : (a * b) * c = a * (b * c)
 
+class MyGroup2 (G : Type*) extends One G, Inv G, Mul G where
+
 instance {α : Type*} : MyGroup (Equiv α α) where
   one := Equiv.refl α
   inv := Equiv.symm
@@ -123,7 +125,21 @@ theorem MyGroup.mul_left_cancel (a b c : G) (h : a * b = a * c) : b = c := by
     mul_assoc, mul_assoc, h]
 
 theorem MyGroup.mul_one (a : G) : a * 1 = a := by
-  sorry
+  have mul_inv_cnx : 1 = a * a⁻¹ := by
+    rw [<- inv_mul_cancel a⁻¹]
+    nth_rw 2 [<- one_mul a⁻¹]
+    rw [<- mul_assoc (a⁻¹⁻¹)]
+    rw [<- inv_mul_cancel a]
+    rw [<- mul_assoc a⁻¹⁻¹]
+    rw [inv_mul_cancel a⁻¹]
+    rw [one_mul]
+  rw [<- inv_mul_cancel a]
+  rw [<- mul_assoc a]
+  rw [<- mul_inv_cnx]
+  exact mul_one
+
+
+
 
 theorem MyGroup.mul_inv_cancel (a : G) : a * a⁻¹ = 1 := by
   sorry

@@ -197,73 +197,244 @@ section
 variable (s t u v : Set α)
 
 example : s ⊆ s := by
-  sorry
+  intro a hs
+  exact hs
 
 example : s ⊆ t → t ⊆ u → s ⊆ u := by
-  sorry
+  intro hst htu a ha
+  specialize hst ha
+  specialize htu hst
+  exact htu
+
 
 example : s ⊆ s ∪ t := by
-  sorry
+  refine fun a ha ↦ Or.inl ha
 
 example : s ∩ t ⊆ s := by
-  sorry
+  refine fun a ha ↦ ha.left
 
 example : s ⊆ t → s ⊆ u → s ⊆ t ∩ u := by
-  sorry
+  intro hst hsu a ha
+  specialize hst ha
+  specialize hsu ha
+  constructor
+  · exact hst
+  · exact hsu
+
+example : s ⊆ t → s ⊆ u → s ⊆ t ∩ u := by
+  refine fun hst hsu a ha ↦ ⟨(hst ha), (hsu ha)⟩
 
 example : t ⊆ s → u ⊆ s → t ∪ u ⊆ s := by
-  sorry
+  intro hts has a hatu
+  rcases hatu with hat | hau
+  · exact hts hat
+  · exact has hau
 
 example : s ⊆ t → u ⊆ v → s ∪ u ⊆ t ∪ v := by
-  sorry
+  intro hst huv a ha
+  rcases ha with has | hau
+  · specialize hst has
+    left
+    exact hst
+  · specialize huv hau
+    right
+    exact huv
 
 example : s ⊆ t → u ⊆ v → s ∩ u ⊆ t ∩ v := by
-  sorry
+  intro hst huv a hasu
+  constructor
+  · specialize hst hasu.left
+    exact hst
+  · specialize huv hasu.right
+    exact huv
 
 example : ∅ ⊆ s := by
-  sorry
+  intro a ha
+  by_contra h
+  exact ha
 
 example : s ⊆ Set.univ := by
-  sorry
+  intro a ha
+  exact trivial
 
 example : s ⊆ t → t ⊆ s → s = t := by
-  sorry
+  intro hst hts
+  ext a
+  constructor
+  · intro has
+    specialize hst has
+    exact hst
+  · intro hat
+    specialize hts hat
+    exact hts
 
 example : s ∪ s = s := by
-  sorry
+  ext a
+  constructor
+  · intro hass
+    rcases hass with has | has'
+    · exact has
+    · exact has'
+  · intro has
+    left
+    exact has
 
 example : s ∩ s = s := by
-  sorry
+  ext a
+  constructor
+  · intro hass
+    exact hass.left
+  · intro has
+    constructor
+    · exact has
+    · exact has
 
 example : s ∪ ∅ = s := by
-  sorry
+  ext a
+  constructor
+  · intro hase
+    rcases hase with has | hae
+    · exact has
+    · by_contra h
+      exact hae
+  · intro has
+    left
+    exact has
 
 example : s ∪ Set.univ = Set.univ := by
-  sorry
+  ext a
+  constructor
+  · intro hasu
+    exact trivial
+  · intro hau
+    right
+    exact hau
 
 example : s ∩ ∅ = ∅ := by
-  sorry
+  ext a
+  constructor
+  · intro hase
+    exact hase.right
+  · intro hae
+    constructor
+    · by_contra h
+      exact hae
+    · exact hae
 
 example : s ∩ Set.univ = s := by
-  sorry
+  ext a
+  constructor
+  · intro hasu
+    exact hasu.left
+  · intro has
+    constructor
+    · exact has
+    · exact trivial
 
 example : s ∪ t = t ∪ s := by
-  sorry
+  ext a
+  constructor
+  · intro hast
+    rcases hast with has | hat
+    · right
+      exact has
+    · left
+      exact hat
+  · intro hats
+    rcases hats with hat | has
+    · right
+      exact hat
+    · left
+      exact has
 
 example : s ∩ t = t ∩ s := by
-  sorry
+  ext a
+  constructor
+  · intro hast
+    constructor
+    · exact hast.right
+    · exact hast.left
+  · intro hats
+    constructor
+    · exact hats.right
+    · exact hats.left
 
 example : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) := by
-  sorry
+  ext a
+  constructor
+  · intro hastu
+    rcases hastu with (has | hatu)
+    · constructor
+      · left
+        exact has
+      · left
+        exact has
+    · constructor
+      · right
+        exact hatu.left
+      · right
+        exact hatu.right
+  · intro hastsu
+    rcases hastsu with ⟨hast, hasu⟩
+    rcases hast with has | hat
+    · left
+      exact has
+    · rcases hasu with (has' | hau)
+      · left
+        exact has'
+      · right
+        constructor
+        · exact hat
+        · exact hau
 
 example : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u := by
+  ext a
   sorry
+
 
 example : (s ∪ t)ᶜ = sᶜ ∩ tᶜ := by
-  sorry
+  ext a
+  constructor
+  · intro hastc
+    constructor
+    · intro hasc
+      apply hastc
+      left
+      exact hasc
+    · intro hatc
+      apply hastc
+      right
+      exact hatc
+  · intro hasctc hast
+    rcases hast with (has | hat)
+    · apply hasctc.left
+      exact has
+    · apply hasctc.right
+      exact hat
+
+
 
 example : (s ∩ t)ᶜ = sᶜ ∪ tᶜ := by
-  sorry
+  ext a
+  constructor
+  · intro hastc
+    by_contra h1
+    apply hastc
+    constructor
+    · by_contra h2
+      apply h1
+      left
+      exact h2
+    · by_contra h3
+      apply h1
+      right
+      exact h3
+  · intro hasctc hastc
+    rcases hasctc with hasc | hatc
+    · apply hasc
+      exact hastc.left
+    · apply hatc
+      exact hastc.right
 
 end
 
@@ -272,24 +443,74 @@ section
 variable (f : α → β) (g : β → γ) (s : Set α) (t : Set β) (u : Set γ)
 
 example : s ⊆ f ⁻¹' (f '' s) := by
-  sorry
+  intro a has
+  use a
 
 example : f '' (f ⁻¹' t) ⊆ t := by
-  sorry
+  intro b hbfft
+  choose a hat hbfft using hbfft
+  rw [<- hbfft]
+  exact hat
+
+
 
 example : f '' s ⊆ t ↔ s ⊆ f ⁻¹' t := by
-  sorry
+  constructor
+  · intro hfst a has
+    apply hfst
+    use a
+  · intro hsft b hbfs
+    choose a hbfs using hbfs
+    specialize hsft hbfs.left
+    rw [<- hbfs.right]
+    exact hsft
+
 
 example : id ⁻¹' s = s := by
-  sorry
+  ext a
+  constructor
+  · intro haids
+    exact haids
+  · intro has
+    exact has
 
 example : id '' s = s := by
-  sorry
+  ext a
+  constructor
+  · intro haids
+    choose b haids using haids
+    rw [<- haids.right]
+    exact haids.left
+  · intro has
+    use a
+    constructor
+    · exact has
+    · rfl
 
 example : g ∘ f ⁻¹' u = f ⁻¹' (g ⁻¹' u) := by
-  sorry
+  ext a
+  constructor
+  · intro hagfu
+    exact hagfu
+  · intro hafgu
+    exact hafgu
 
 example : g ∘ f '' s = g '' (f '' s) := by
-  sorry
-
+  ext a
+  constructor
+  · intro hagfs
+    choose b hb hgfba using hagfs
+    use (f b)
+    constructor
+    · use b
+    · exact hgfba
+  · intro hagfs
+    choose b hb hagfs using hagfs
+    choose b' hb using hb
+    use b'
+    constructor
+    · exact hb.left
+    · change g (f b') = a
+      rw [hb.right]
+      exact hagfs
 end

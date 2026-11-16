@@ -123,11 +123,30 @@ Here are two more examples of basic API lemmas as examples for you to try.
 
 theorem Injective.of_comp_right (hgf : Injective (g ∘ f)) (hf : Surjective f) :
     Injective g := by
-  sorry
+  intro a b hgagb
+  have hf' : Surjective f := by exact hf
+  specialize hf a
+  specialize hf' b
+  choose a' ha' using hf
+  choose b' hb' using hf'
+  specialize hgf a' b'
+  change g (f a') = g (f b') → a' = b' at hgf
+  rw [ha', hb'] at hgf
+  specialize hgf hgagb
+  rw [<- hgf] at hb'
+  rw [<- ha', <- hb']
+
 
 theorem Surjective.of_comp_left (hgf : Surjective (g ∘ f)) (hg : Injective g) :
     Surjective f := by
-  sorry
+  intro b
+  specialize hgf (g b)
+  choose a ha using hgf
+  use a
+  specialize hg (f a) b
+  apply hg
+  exact ha
+
 
 /-
 A predicate `Bijective` on functions `f : α → β` is one possible way
@@ -182,15 +201,18 @@ structure MyEquiv (α β : Type*) where
   left_inv : invFun ∘ toFun = id
   right_inv : toFun ∘ invFun = id
 
+@[simp]
 theorem MyEquiv.invFun_toFun (e : MyEquiv α β) (a : α) :
     e.invFun (e.toFun a) = a := by
   rw [← e.invFun.comp_apply, e.left_inv, id_eq]
 
+@[simp]
 theorem MyEquiv.toFun_invFun (e : MyEquiv α β) (b : β) :
     e.toFun (e.invFun b) = b := by
   rw [← e.toFun.comp_apply, e.right_inv, id_eq]
 
 /-- The equivalence from a type to itself. -/
+@[simp]
 def MyEquiv.refl (α : Type*) : MyEquiv α α where
   toFun := id
   invFun := id
@@ -198,6 +220,7 @@ def MyEquiv.refl (α : Type*) : MyEquiv α α where
   right_inv := rfl
 
 /-- Inverse of an equivalence. -/
+@[simp]
 def MyEquiv.symm (e : MyEquiv α β) : MyEquiv β α where
   toFun := e.invFun
   invFun := e.toFun
@@ -205,6 +228,7 @@ def MyEquiv.symm (e : MyEquiv α β) : MyEquiv β α where
   right_inv := e.left_inv
 
 /-- Composition of equivalences. -/
+@[simp]
 def MyEquiv.trans (e1 : MyEquiv α β) (e2 : MyEquiv β γ) : MyEquiv α γ where
   toFun := e2.toFun ∘ e1.toFun
   invFun := e1.invFun ∘ e2.invFun
@@ -221,9 +245,11 @@ def MyEquiv.trans (e1 : MyEquiv α β) (e2 : MyEquiv β γ) : MyEquiv α γ wher
 With this bundled approach, `MyEquiv.symm` has nice definitional equality.
 -/
 
+@[simp]
 theorem MyEquiv.symm_symm (e : MyEquiv α β) : e.symm.symm = e := by
   rfl
 
+@[simp]
 theorem MyEquiv.symm_trans (e1 : MyEquiv α β) (e2 : MyEquiv β γ) :
     (e1.trans e2).symm = e2.symm.trans e1.symm := by
   rfl
@@ -235,7 +261,17 @@ not so hard, and is left as an example for you to try.
 -/
 
 theorem MyEquiv.bijective (e : MyEquiv α β) : Bijective e.toFun := by
-  sorry
+  constructor
+  · intro a b hab
+    sorry
+
+
+  · intro b
+    use (e.invFun b)
+    rw [e.toFun_invFun]
+
+
+
 
 /-
 Producing an equivalence from a bijective function is more difficult.
@@ -262,7 +298,19 @@ theorem Bijective.exists_myEquiv (f : α → β) (hf : Bijective f) :
   { toFun := f
     invFun := g
     left_inv := by
-      sorry
+      ext a
+      specialize hf_inj a
+      specialize hg (f a)
+      specialize hf_inj (g (f a))
+      rw [hg] at hf_inj
+      specialize hf_inj rfl
+      change g (f a) = a
+      rw [<- hf_inj]
     right_inv := by
-      sorry }
+      ext a
+      --specialize hf_inj a
+      specialize hg a
+      change f (g a) = a
+      exact hg
+       }
   use e
